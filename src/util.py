@@ -162,7 +162,7 @@ def copy_files(source, destination):
             copy_files(src_item, dst_item)
 
 
-def generate_page(from_path, template_path, dest_path):
+def generate_page(from_path, template_path, dest_path, basepath):
     print(f"Generating page from {from_path} to {dest_path} using template {template_path}.")
 
     if not os.path.exists(from_path):
@@ -188,7 +188,7 @@ def generate_page(from_path, template_path, dest_path):
 
     #print(f"Extracted title: {title}")
 
-    template = template.replace("{{ Title }}", title).replace("{{ Content }}", content)
+    template = template.replace("{{ Title }}", title).replace("{{ Content }}", content).replace('href="/', 'href="' + basepath).replace('src="/', 'src="' + basepath)
     print(f"Replaced title and content in template")
     print(template)
 
@@ -202,7 +202,7 @@ def generate_page(from_path, template_path, dest_path):
         f.close()
 
 
-def generate_page_recursive(from_path, template_path, dest_path):
+def generate_page_recursive(from_path, template_path, dest_path, basepath):
     for file in os.listdir(from_path):
         file_path = os.path.join(from_path, file)
         dest_base_path = os.path.join(dest_path, file)
@@ -216,6 +216,6 @@ def generate_page_recursive(from_path, template_path, dest_path):
 
         if os.path.isfile(file_path) and ext == ".md":
             print(f"Generating page from {file_path} -> {new_dest_path} using template {template}.")
-            generate_page(file_path, template, new_dest_path)
+            generate_page(file_path, template, new_dest_path, basepath)
         else:
-            generate_page_recursive(file_path, template, dest_base_path)
+            generate_page_recursive(file_path, template, dest_base_path, basepath)
